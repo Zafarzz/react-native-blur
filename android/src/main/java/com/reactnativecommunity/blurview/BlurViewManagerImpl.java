@@ -7,6 +7,10 @@ import eightbitlab.com.blurview.BlurView;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 
 @SuppressWarnings("unused")
 class BlurViewManagerImpl {
@@ -22,9 +26,17 @@ class BlurViewManagerImpl {
       .requireNonNull(ctx.getCurrentActivity())
       .getWindow()
       .getDecorView();
+    Drawable windowBackground = decorView.getBackground();
+    Bitmap bitmap = Bitmap.createBitmap(
+      windowBackground.getIntrinsicWidth(),
+      windowBackground.getIntrinsicHeight(),
+      Bitmap.Config.ARGB_8888
+    );
+    Canvas canvas = new Canvas(bitmap);
+    windowBackground.draw(canvas);
     blurView
       .setupWith(decorView.findViewById(android.R.id.content))
-      .setFrameClearDrawable(decorView.getBackground())
+      .setFrameClearDrawable(new BitmapDrawable(ctx.getResources(), bitmap))
       .setBlurRadius(defaultRadius);
     return blurView;
   }
